@@ -66,7 +66,7 @@ ARAMORPHERDIR = ../
 UTF8DIR= $(ARAMORPHERDIR)utf8
 VPATH= $(ARAMORPHERDIR)
 # location of boost lib
-BOOSTLIB= /usr/lib64
+BOOSTLIB= /usr/local/lib
 
 all:	$(EXEC)
 
