@@ -16,11 +16,11 @@ using std::set;
 namespace Aramorph {
 /*********** Constants ******************/
 /** Default name for Buckwalter prefix-to-stem compatibility table */
-const static string PREFIX_STEM = "tableab";
+const static string PREFIX_STEM = "tableab.txt";
 /** Default name for Buckwalter prefix-to-suffix compatibility table */
-const static string PREFIX_SUFFIX = "tableac";
+const static string PREFIX_SUFFIX = "tableac.txt";
 /** Default name for Buckwalter stem-to-suffix compatibility table */
-const static string STEM_SUFFIX = "tablebc";
+const static string STEM_SUFFIX = "tablebc.txt";
 
 /**
 * \class CompatTable

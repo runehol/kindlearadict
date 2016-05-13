@@ -18,11 +18,11 @@ namespace Aramorph {
 
 /*********** Constants ******************/
 /** Default name for Buckwalter Dictionary of stems */
-const static string STEM_DICTIONARY = "dictstems";
+const static string STEM_DICTIONARY = "dictstems.txt";
 /** Default name for Buckwalter Dictionary of prefixes */
-const static string PREFIX_DICTIONARY = "dictprefixes";
+const static string PREFIX_DICTIONARY = "dictprefixes.txt";
 /** Default name for Buckwalter Dictionary of suffixes */
-const static string SUFFIX_DICTIONARY = "dictsuffixes";
+const static string SUFFIX_DICTIONARY = "dictsuffixes.txt";
 
 /** Key for POS F (FUNC WORD) */
 const static string POS_F = "FUNC_WORD";
