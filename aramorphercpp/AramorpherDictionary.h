@@ -127,6 +127,12 @@ public:
 		}
 	};
 
+	struct Lemma {
+		Lemma(const string &name = "") : lemma(name) {}
+		string lemma;
+		std::vector<Entry> entries;
+	};
+
 	/** Map of stems with their info */
 	typedef std::multimap<const string, Entry > EntryMap;
 	/** Set of Entries, using EntryComp to sort. */
@@ -136,6 +142,9 @@ public:
 
 	/** Entry in a EntryMap */
 	typedef std::pair<const string, Entry > EntryPair;
+
+	typedef std::list<Lemma> LemmaList;
+
 
 private:
 	/** Unique set of lemmas */
@@ -155,6 +164,7 @@ private:
 	bool conv_uascii;
 	/** Unique lemmas */
 	LemmaSet lemmas;
+	LemmaList lemma_list;
 	/** map of lookups to their entries */
 	EntryMap lookups;
 

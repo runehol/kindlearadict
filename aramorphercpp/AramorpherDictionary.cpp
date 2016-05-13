@@ -80,11 +80,18 @@ void AramorpherDictionary::readFile() {
 	string line;
 	// won't change unless reading stems
 	string lemma = "";
+	Lemma curr_lemma;
     while (getline(df, line)) {
     	lineno++;
     	if (line.at(0) == COMMENT_CHAR) {
 			// ;; means start of a lemma
 			if (line.length() > 2 && line.at(1) == COMMENT_CHAR) {
+				if(lemma != "")
+				{
+					lemma_list.push_back(curr_lemma);
+					curr_lemma = Lemma(lemma);
+				}
+				
 				lemma = line.substr(2);
 				boost::algorithm::trim(lemma);
        			if (!lemma.empty() && !lemmas.insert(lemma).second) {
@@ -95,9 +102,18 @@ void AramorpherDictionary::readFile() {
     	} else {
     		tokenizer entries(line, KEEP_TABS);
     		EntryPair stempr = make_entry_pair(entries, lemma);
+			if(lemma != "")
+			{
+				curr_lemma.entries.push_back(stempr.second);
+			}
     		lookups.insert(stempr);
     	}
     }
+	if(lemma != "")
+	{
+		lemma_list.push_back(curr_lemma);
+		curr_lemma = Lemma();
+	}
     if (verbose) {
         cout << "read " << lineno << " lines and " << lookups.size() << " entries";
         int lemmact = lemmas.size();
