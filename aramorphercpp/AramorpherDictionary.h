@@ -64,7 +64,7 @@ const static LKP_PR posprs[] = {
 const static LKP_TBL POS_MAP(posprs, posprs + sizeof(posprs) / sizeof(posprs[0]));
 
 /** Pattern for recognizing upper ASCII character sets to be replaced with LOWER_ASCII_FMT */
-const static string UPPER_ASCII_PAT = "([¿¡¬√ƒ≈])|(«)|([»… À])|([ÃÕŒœ])|(—)|([“”‘’÷])|([Ÿ⁄€‹])|([‡·‚„‰Â])|(Á)|([ËÈÍÎ])|([ÏÌÓÔ])|(Ò)|([ÚÛÙıˆ])|([˘˙˚¸])|(∆)|(ä)|(é)|(ﬂ)|(Ê)|(ö)|(û)";
+const static string UPPER_ASCII_PAT = "([\300\301\302\303\304\305])|(\307)|([\310\311\312\313])|([\314\315\316\317])|(\321)|([\322\323\324\325\326])|([\331\332\333\334])|([\340\341\342\343\344\345])|(\347)|([\350\351\352\353])|([\354\355\356\357])|(\361)|([\362\363\364\365\366])|([\371\372\373\374])|(\306)|(\212)|(\216)|(\337)|(\346)|(\232)|(\236)";
 /** Formatting to use to replace UPPER_ASCII_PAT */
 const static string LOWER_ASCII_FMT = "(?1A)(?2C)(?3E)(?4I)(?5N)(?6O)(?7U)(?8a)(?9c)(?10e)(?11i)(?12n)(?13o)(?14u)(?15AE)(?16Sh)(?17Zh)(?18ss)(?19ae)(?20sh)(?21zh)";
 /** Regex to replace UPPER_ASCII_PAT with LOWER_ASCII_FMT */
