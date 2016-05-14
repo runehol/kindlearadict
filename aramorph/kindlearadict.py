@@ -104,7 +104,9 @@ def gen_dict():
     
     print(len(lemmas), len(prefixes), len(suffixes))
 
-    lemma_selection = lemmas #[:1000]
+    lemma_selection = lemmas[:5000]
+    lemma_selection = [lemma for lemma in lemmas if lemma[1][0:1] == "E"]
+    lemma_selection = lemmas
     n_generated = 0
     start_time = time.clock()
     n_stems = 0
