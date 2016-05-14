@@ -77,10 +77,10 @@ def process_tableAC():
         ac[left].append(right)
 
 def are_prefix_stem_compatible(prefix_morpheme, stem_morpheme):
-    return stem_morpheme.cat in ab[prefix_morpheme.cat]
+    return stem_morpheme in ab[prefix_morpheme.cat]
     
 def are_stem_suffix_compatible(stem_morpheme, suffix_morpheme):
-    return suffix_morpheme.cat in bc[stem_morpheme.cat]
+    return suffix_morpheme.cat in bc[stem_morpheme]
 
 def are_prefix_suffix_compatible(prefix_morpheme, suffix_morpheme):
     return suffix_morpheme.cat in ac[prefix_morpheme.cat]
@@ -103,9 +103,11 @@ def gen_dict(dest_file, is_mini):
     out_dict = opfgen.KindleDictGenerator(title, "https://github.com/runehol/kindlearadict/", ["Rune Holm"], "ar", "en", "../datafiles/aradict-cover.jpg", "../datafiles/title-page.html", dirname, fname)
 
     prefix_suffix_table = defaultdict(list)
-    for stem_cat, prefixes_list in prefixes_for_cat.items():
-        for prefix_entry in prefixes_list:
-            for suffix_entry in suffixes_for_cat[stem_cat]:
+    for stem_cat in prefixes_for_cat.keys():
+        for prefix_entry in prefixes:
+            if not are_prefix_stem_compatible(prefix_entry, stem_cat): continue
+            for suffix_entry in suffixes:
+                if not are_stem_suffix_compatible(stem_cat, suffix_entry): continue
                 if not are_prefix_suffix_compatible(prefix_entry, suffix_entry): continue
                 prefix_suffix_table[stem_cat].append( (prefix_entry, suffix_entry) )
                 
