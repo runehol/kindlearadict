@@ -91,7 +91,7 @@ def gen_dict():
     process_tableBC()
     process_tableAC()
 
-    out_dict = kindledictgen.KindleDictGenerator("The Morphological Arabic-English Dictionary", "http://github.com/runehol/kindlearadict/", ["Rune Holm"], "ar", "en", "../../manual/aradict-cover.jpg", "../../manual/title-page.html", "aradict", "aradict.opf")
+    out_dict = kindledictgen.KindleDictGenerator("The Morphological Arabic-English Dictionary", "https://github.com/runehol/kindlearadict/", ["Rune Holm"], "ar", "en", "../datafiles/aradict-cover.jpg", "../datafiles/title-page.html", "aradict", "aradict.opf")
 
     prefix_suffix_table = defaultdict(list)
     for stem_cat, prefixes_list in prefixes_for_cat.items():
@@ -102,8 +102,6 @@ def gen_dict():
                 
 
     
-    print(len(lemmas), len(prefixes), len(suffixes))
-
     lemma_selection = lemmas[:5000]
     lemma_selection = [lemma for lemma in lemmas if lemma[1][0:1] == "E"]
     lemma_selection = lemmas
