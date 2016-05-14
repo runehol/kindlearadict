@@ -2,13 +2,12 @@
 
 import cPickle as pickle
 from collections import defaultdict
-from aramorpher import Morpheme, Aramorpher
 from process_files import process_textfile, process_tableXY
 import transliterate
 import time
 
 prefixes = []
-stems    = []
+lemmas    = []
 suffixes = []
 
 ab = defaultdict(list)
@@ -19,21 +18,40 @@ prefixes_for_cat = defaultdict(list)
 suffixes_for_cat = defaultdict(list)
 
 
+class Morpheme(object):
+    def __init__(self, unvowelled, vowelled, cat, pos, gloss, root, lemma):
+        self.unvowelled   = unvowelled
+        self.vowelled   = vowelled
+        self.gloss      = gloss
+        self.cat        = cat  # for verifying compatibility
+        self.pos        = pos  # human-readable part of speech
+        self.root       = root # only really valid for (a subset of) stems, 
+                               # empty for everything else
+        self.lemma      = lemma # only really valid for (a subset of) stems, 
+                               # empty for everything else
+                               
+    def __str__(self):
+        return "%s (%s : %s) %s %s %s" % (self.vowelled, self.root, self.lemma, self.cat, self.pos, self.gloss)
+    
+    def __repr__(self):
+        return self.__str__()
+
+
 def process_prefixes():
     for (unvowelled, vowelled, cat, pos, gloss, root, lemma) in process_textfile("dictprefixes.txt"):
-        prefixes.append(Morpheme(vowelled, cat, pos, gloss, root, lemma))
+        prefixes.append(Morpheme(unvowelled, vowelled, cat, pos, gloss, root, lemma))
 
 def process_stems():
     curr_lemma = "not a valid lemma"
     for (unvowelled, vowelled, cat, pos, gloss, root, lemma) in process_textfile("dictstems.txt"):
         if lemma != curr_lemma:
             curr_lemma = lemma
-            stems.append( (lemma, []) )
-        stems[-1][1].append(Morpheme(vowelled, cat, pos, gloss, root, lemma))
+            lemmas.append( (lemma, []) )
+        lemmas[-1][1].append(Morpheme(unvowelled, vowelled, cat, pos, gloss, root, lemma))
 
 def process_suffixes():
     for (unvowelled, vowelled, cat, pos, gloss, root, lemma) in process_textfile("dictsuffixes.txt"):
-        suffixes.append(Morpheme(vowelled, cat, pos, gloss, root, lemma))
+        suffixes.append(Morpheme(unvowelled, vowelled, cat, pos, gloss, root, lemma))
 
 def process_tableAB():
     for (left, right) in process_tableXY("tableab.txt"):
@@ -81,27 +99,34 @@ def gen_dict():
                 
 
     
-    print len(stems), len(prefixes), len(suffixes)
+    print len(lemmas), len(prefixes), len(suffixes)
 
-    stem_selection = stems[:1000]
+    lemma_selection = lemmas[:100]
     n_generated = 0
     start_time = time.clock()
-    for lemma, stem_list in stem_selection:
+    n_stems = 0
+    for lemma, stem_list in lemma_selection:
         for stem_entry in stem_list:
+            n_stems += 1
             for prefix_entry, suffix_entry in prefix_suffix_table[stem_entry.cat]:
 
                 vowelled_form = prefix_entry.vowelled + \
                                     stem_entry.vowelled + \
                                     suffix_entry.vowelled
+                unvowelled_form = prefix_entry.unvowelled + \
+                                    stem_entry.unvowelled + \
+                                    suffix_entry.unvowelled
 
                 gloss = stem_entry.gloss
 
-                uvowelled = transliterate.b2u(vowelled_form)
+#                uvowelled = transliterate.b2u(vowelled_form)
+                u_unvowelled = transliterate.b2u(unvowelled_form)
+#                print lemma, u_unvowelled
                 n_generated += 1
 
 
     elapsed_time = time.clock() - start_time
-    print "Generated %d forms from %d lemmas in %f seconds" % (n_generated, len(stem_selection), elapsed_time)
+    print "Generated %d forms from %d lemmas and %d stems in %f seconds" % (n_generated, len(lemma_selection), n_stems, elapsed_time)
                 
         
     
