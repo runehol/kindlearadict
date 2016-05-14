@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 
 from collections import defaultdict
+from xml.sax.saxutils import escape, quoteattr
+import argparse
+import os.path
+import time
+
 from process_files import process_textfile, process_tableXY
 import transliterate
-import time
 import opfgen
-from xml.sax.saxutils import escape, quoteattr
 
 prefixes = []
 lemmas    = []
@@ -83,7 +86,7 @@ def are_prefix_suffix_compatible(prefix_morpheme, suffix_morpheme):
     return suffix_morpheme.cat in ac[prefix_morpheme.cat]
 
         
-def gen_dict():
+def gen_dict(dest_file, is_mini):
     process_prefixes()
     process_stems()
     process_suffixes()
@@ -91,7 +94,13 @@ def gen_dict():
     process_tableBC()
     process_tableAC()
 
-    out_dict = opfgen.KindleDictGenerator("The Morphological Arabic-English Dictionary", "https://github.com/runehol/kindlearadict/", ["Rune Holm"], "ar", "en", "../datafiles/aradict-cover.jpg", "../datafiles/title-page.html", "aradict", "aradict.opf")
+    dirname, fname = os.path.split(dest_file)
+
+    title = "The Morphological Arabic-English Dictionary"
+    if is_mini:
+        title = "Test Dictionary"
+
+    out_dict = opfgen.KindleDictGenerator(title, "https://github.com/runehol/kindlearadict/", ["Rune Holm"], "ar", "en", "../datafiles/aradict-cover.jpg", "../datafiles/title-page.html", dirname, fname)
 
     prefix_suffix_table = defaultdict(list)
     for stem_cat, prefixes_list in prefixes_for_cat.items():
@@ -101,10 +110,10 @@ def gen_dict():
                 prefix_suffix_table[stem_cat].append( (prefix_entry, suffix_entry) )
                 
 
-    
-    lemma_selection = lemmas[:5000]
-    lemma_selection = [lemma for lemma in lemmas if lemma[1][0:1] == "E"]
-    lemma_selection = lemmas
+    if is_mini:
+        lemma_selection = [lemma for lemma in lemmas if lemma[1][0:1] == "E"]
+    else:
+        lemma_selection = lemmas
     n_generated = 0
     start_time = time.clock()
     n_stems = 0
@@ -170,4 +179,10 @@ def gen_dict():
         
     
 if __name__ == "__main__":
-    gen_dict()
+    parser = argparse.ArgumentParser(description='Generate an Arabic-English Kindle dictionary')
+    parser.add_argument('--dest-file',
+                    help='Destination opf file')
+    parser.add_argument('--mini', action='store_true',
+                    help='Generate small test dictionary (only roots starting with ع)')
+    arg = parser.parse_args()
+    gen_dict(arg.dest_file, arg.mini)
