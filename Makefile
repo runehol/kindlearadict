@@ -29,5 +29,5 @@ installmini: minidict/minidict.mobi
 
 
 clean:
-	rm -r aradict
+	rm -r aradict minidict
 
