@@ -5,7 +5,7 @@ all: aradict/aradict.mobi
 
 
 aradict/aradict.mobi: aradict/aradict.opf
-	cd aradict &&  /usr/bin/time kindlegen -c2 -verbose -dont_append_source aradict.opf
+	cd aradict &&  /usr/bin/time kindlegen -c2 -verbose -dont_append_source aradict.opf; true
 
 aradict/aradict.opf: $(wildcard *.py) $(wildcard *.txt)
 	./kindlearadict.py
