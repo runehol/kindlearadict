@@ -4,50 +4,57 @@ import cPickle as pickle
 from collections import defaultdict
 from aramorpher import Morpheme, Aramorpher
 from process_files import process_textfile, process_tableXY
+import transliterate
+import time
 
-prefixes = defaultdict(list)
-stems    = defaultdict(list)
-suffixes = defaultdict(list)
+prefixes = []
+stems    = []
+suffixes = []
 
 ab = defaultdict(list)
 bc = defaultdict(list)
 ac = defaultdict(list)
-prefixes_for_cat = defaultdict(list)
-suffixes_for_cat = defaultdict(list)
+
 
 def process_prefixes():
-    for (unvowelled, vowelled, cat, pos, gloss, root) in process_textfile("dictprefixes.txt"):
-        prefixes[unvowelled].append(Morpheme(vowelled, cat, pos, gloss, root))
+    for (unvowelled, vowelled, cat, pos, gloss, root, lemma) in process_textfile("dictprefixes.txt"):
+        prefixes.append(Morpheme(vowelled, cat, pos, gloss, root, lemma))
 
 def process_stems():
-    for (unvowelled, vowelled, cat, pos, gloss, root) in process_textfile("dictstems.txt"):
-        stems[unvowelled].append(Morpheme(vowelled, cat, pos, gloss, root))
+    curr_lemma = "not a valid lemma"
+    for (unvowelled, vowelled, cat, pos, gloss, root, lemma) in process_textfile("dictstems.txt"):
+        if lemma != curr_lemma:
+            curr_lemma = lemma
+            stems.append( (lemma, []) )
+        stems[-1][1].append(Morpheme(vowelled, cat, pos, gloss, root, lemma))
 
 def process_suffixes():
-    for (unvowelled, vowelled, cat, pos, gloss, root) in process_textfile("dictsuffixes.txt"):
-        suffixes[unvowelled].append(Morpheme(vowelled, cat, pos, gloss, root))
+    for (unvowelled, vowelled, cat, pos, gloss, root, lemma) in process_textfile("dictsuffixes.txt"):
+        suffixes.append(Morpheme(vowelled, cat, pos, gloss, root, lemma))
 
 def process_tableAB():
     for (left, right) in process_tableXY("tableab.txt"):
         ab[left].append(right)
-        for key, lst in prefixes.iteritems():
-            for entry in lst:
-                if entry.cat == right:
-                    prefixes_for_cat[left].append(key)
              
 
 def process_tableBC():
     for (left, right) in process_tableXY("tablebc.txt"):
         bc[left].append(right)
-        for key, lst in suffixes.iteritems():
-            for entry in lst:
-                if entry.cat == right:
-                    suffixes_for_cat[left].append(key)
 
 def process_tableAC():
     for (left, right) in process_tableXY("tableac.txt"):
         ac[left].append(right)
 
+def are_prefix_stem_compatible(prefix_morpheme, stem_morpheme):
+    return stem_morpheme.cat in ab[prefix_morpheme.cat]
+    
+def are_stem_suffix_compatible(stem_morpheme, suffix_morpheme):
+    return suffix_morpheme.cat in bc[stem_morpheme.cat]
+
+def are_prefix_suffix_compatible(prefix_morpheme, suffix_morpheme):
+    return suffix_morpheme.cat in ac[prefix_morpheme.cat]
+
+        
 def gen_dict():
     process_prefixes()
     process_stems()
@@ -56,19 +63,33 @@ def gen_dict():
     process_tableBC()
     process_tableAC()
 
-    # now construct AramorphInfo
-    aramorph = Aramorpher(prefixes, stems, suffixes, ab, bc, ac)
     print len(stems), len(prefixes), len(suffixes)
 
+    stem_selection = stems[:100]
+    n_generated = 0
+    start_time = time.clock()
+    for lemma, stem_list in stem_selection:
+        for stem_entry in stem_list:
+            for prefix_entry in prefixes:
+                if not are_prefix_stem_compatible(prefix_entry, stem_entry): continue
 
-    
+                for suffix_entry in suffixes:
+                    if not are_stem_suffix_compatible(stem_entry, suffix_entry): continue
+                    if not are_prefix_suffix_compatible(prefix_entry, suffix_entry): continue
 
-    for stem in {key:value for key,value in stems.items()[0:10]}:
-        for prefix in prefixes:
-            for suffix in suffixes:
-                entries = aramorph.check_compatibility("", prefix, stem, suffix)
-                if not entries: continue
-                print entries
+                    vowelled_form = prefix_entry.vowelled + \
+                                    stem_entry.vowelled + \
+                                    suffix_entry.vowelled
+
+                    gloss = stem_entry.gloss
+
+                    uvowelled = transliterate.b2u(vowelled_form)
+#                    ala = transliterate.b2ala(vowelled_form)
+                    n_generated += 1
+
+    elapsed_time = time.clock() - start_time
+    print "Generated %d forms from %d lemmas in %f seconds" % (n_generated, len(stem_selection), elapsed_time)
+                
         
     
 if __name__ == "__main__":

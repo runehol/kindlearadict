@@ -10,16 +10,18 @@ Run this first:
 import transliterate
 
 class Morpheme(object):
-    def __init__(self, vowelled, cat, pos, gloss, root):
+    def __init__(self, vowelled, cat, pos, gloss, root, lemma):
         self.vowelled   = vowelled
         self.gloss      = gloss
         self.cat        = cat  # for verifying compatibility
         self.pos        = pos  # human-readable part of speech
         self.root       = root # only really valid for (a subset of) stems, 
                                # empty for everything else
+        self.lemma      = lemma # only really valid for (a subset of) stems, 
+                               # empty for everything else
                                
     def __str__(self):
-        return "%s (%s) %s %s %s" % (self.vowelled, self.root, self.cat, self.pos, self.gloss)
+        return "%s (%s : %s) %s %s %s" % (self.vowelled, self.root, self.lemma, self.cat, self.pos, self.gloss)
     
     def __repr__(self):
         return self.__str__()

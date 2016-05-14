@@ -2,6 +2,7 @@ import re
 
 def process_textfile(filename):
     root = '' # should always be empty for prefixes and suffixes
+    lemma = '' # should always be empty for prefixes and suffixes
     with open(filename, "r") as f:
         for line in f:
             if line.startswith(';--- '): # this contains the root for the following lines
@@ -19,6 +20,9 @@ def process_textfile(filename):
                 
             elif line.startswith(';-----'): # "reset" line for when there's no root
                 root = ''
+            elif line.startswith(';; '): # this contains the lemma for the following lines
+                lemma = line.replace(';; ','').split()[0]
+                
             elif line.startswith(';'):
                 continue
             try:
@@ -35,7 +39,7 @@ def process_textfile(filename):
                 else:
                     local_root = root
                     
-                yield (unvowelled, vowelled, cat, pos, gloss, local_root)
+                yield (unvowelled, vowelled, cat, pos, gloss, local_root, lemma)
             except:
                 continue
 
