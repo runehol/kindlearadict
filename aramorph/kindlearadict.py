@@ -4,6 +4,8 @@ from collections import defaultdict
 from process_files import process_textfile, process_tableXY
 import transliterate
 import time
+import kindledictgen
+from xml.sax.saxutils import escape, quoteattr
 
 prefixes = []
 lemmas    = []
@@ -45,8 +47,8 @@ def process_stems():
     for (unvowelled, vowelled, cat, pos, gloss, root, lemma) in process_textfile("dictstems.txt"):
         if lemma != curr_lemma:
             curr_lemma = lemma
-            lemmas.append( (lemma, []) )
-        lemmas[-1][1].append(Morpheme(unvowelled, vowelled, cat, pos, gloss, root, lemma))
+            lemmas.append( (lemma, root, []) )
+        lemmas[-1][-1].append(Morpheme(unvowelled, vowelled, cat, pos, gloss, root, lemma))
 
 def process_suffixes():
     for (unvowelled, vowelled, cat, pos, gloss, root, lemma) in process_textfile("dictsuffixes.txt"):
@@ -89,6 +91,8 @@ def gen_dict():
     process_tableBC()
     process_tableAC()
 
+    out_dict = kindledictgen.KindleDictGenerator("The Morphological Arabic-English Dictionary", "http://github.com/runehol/kindlearadict/", ["Rune Holm"], "ar", "en", "../../manual/aradict-cover.jpg", "../../manual/title-page.html", "aradict", "aradict.opf")
+
     prefix_suffix_table = defaultdict(list)
     for stem_cat, prefixes_list in prefixes_for_cat.items():
         for prefix_entry in prefixes_list:
@@ -104,28 +108,55 @@ def gen_dict():
     n_generated = 0
     start_time = time.clock()
     n_stems = 0
-    for lemma, stem_list in lemma_selection:
+    for lemma, root, stem_list in lemma_selection:
+
+        processed_lemma = transliterate.b2u(lemma.split("-")[0].split("_")[0])
+        processed_root = transliterate.b2u(root)
+        if root == "": processed_root = "No root"
+        formatted_head_word = "<b>%s - %s</b>" % (escape(processed_lemma), escape(processed_root))
+        forms = []
+        formatted_desc = "<ul>\n"
         for stem_entry in stem_list:
             n_stems += 1
+            first = True
             for prefix_entry, suffix_entry in prefix_suffix_table[stem_entry.cat]:
 
-                vowelled_form = prefix_entry.vowelled + \
-                                    stem_entry.vowelled + \
-                                    suffix_entry.vowelled
                 unvowelled_form = prefix_entry.unvowelled + \
                                     stem_entry.unvowelled + \
                                     suffix_entry.unvowelled
 
-                gloss = stem_entry.gloss
 
-#                uvowelled = transliterate.b2u(vowelled_form)
                 u_unvowelled = transliterate.b2u(unvowelled_form)
+                forms.append(u_unvowelled)
 #                print lemma, u_unvowelled
                 n_generated += 1
 
+                if first:
+                    first = False
+                    vowelled_form = prefix_entry.vowelled + \
+                                    stem_entry.vowelled + \
+                                    suffix_entry.vowelled
+                    uvowelled = transliterate.b2u(vowelled_form)
+
+                    gloss = stem_entry.gloss
+                    if "verb" in stem_entry.pos:
+                        gloss = "to " + gloss
+
+                    entry = """<li> %s <i>%s</i> %s</li>\n""" % (escape(uvowelled), escape(stem_entry.pos), escape(gloss))
+
+                    formatted_desc += entry
+
+                    
+
+
+        formatted_desc += "\n</ul>\n"
+        out_dict.add_dict_entry(formatted_head_word, forms, formatted_desc)
+        
 
     elapsed_time = time.clock() - start_time
     print("Generated %d forms from %d lemmas and %d stems in %f seconds" % (n_generated, len(lemma_selection), n_stems, elapsed_time))
+
+    out_dict.finalize()
                 
         
     
