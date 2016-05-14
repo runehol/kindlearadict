@@ -121,9 +121,7 @@ def gen_dict(dest_file, is_mini):
     for lemma, root, stem_list in lemma_selection:
 
         processed_lemma = transliterate.b2u(lemma.split("-")[0].split("_")[0])
-        processed_root = transliterate.b2u(root)
-        if root == "": processed_root = "No root"
-        formatted_head_word = "<b>%s - %s</b>" % (escape(processed_lemma), escape(processed_root))
+        formatted_head_word = "<b>%s</b>" % (escape(processed_lemma))
         forms = []
         form_set = set()
         all_defs = []
@@ -168,6 +166,14 @@ def gen_dict(dest_file, is_mini):
         formatted_desc = "<ul>\n"
         formatted_desc += "".join(all_defs)
         formatted_desc += "\n</ul>\n"
+
+        if root == "":
+            formatted_desc += "No root\n"
+        else:
+            processed_root = transliterate.b2u(root)
+            formatted_desc += "Root: %s\n" % (escape(processed_root),)
+
+        formatted_desc += "<hr\>\n"
         out_dict.add_dict_entry(formatted_head_word, forms, formatted_desc)
         
 
