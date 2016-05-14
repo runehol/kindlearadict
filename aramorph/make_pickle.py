@@ -1,6 +1,6 @@
 # Explore using a pickled file rather than redis
 
-import cPickle as pickle
+import pickle as pickle
 from collections import defaultdict
 from aramorpher import Morpheme, Aramorpher
 from process_files import process_textfile, process_tableXY

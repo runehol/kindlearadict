@@ -88,7 +88,7 @@ def gen_dict():
     process_tableAC()
 
     prefix_suffix_table = defaultdict(list)
-    for stem_cat, prefixes_list in prefixes_for_cat.iteritems():
+    for stem_cat, prefixes_list in prefixes_for_cat.items():
         for prefix_entry in prefixes_list:
             for suffix_entry in suffixes_for_cat[stem_cat]:
                 if not are_prefix_suffix_compatible(prefix_entry, suffix_entry): continue
@@ -96,7 +96,7 @@ def gen_dict():
                 
 
     
-    print len(lemmas), len(prefixes), len(suffixes)
+    print(len(lemmas), len(prefixes), len(suffixes))
 
     lemma_selection = lemmas[:100]
     n_generated = 0
@@ -123,7 +123,7 @@ def gen_dict():
 
 
     elapsed_time = time.clock() - start_time
-    print "Generated %d forms from %d lemmas and %d stems in %f seconds" % (n_generated, len(lemma_selection), n_stems, elapsed_time)
+    print("Generated %d forms from %d lemmas and %d stems in %f seconds" % (n_generated, len(lemma_selection), n_stems, elapsed_time))
                 
         
     

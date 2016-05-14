@@ -3,7 +3,7 @@ import re
 def process_textfile(filename):
     root = '' # should always be empty for prefixes and suffixes
     lemma = '' # should always be empty for prefixes and suffixes
-    with open(filename, "r") as f:
+    with open(filename, "r", encoding="iso8859-1") as f:
         for line in f:
             if line.startswith(';--- '): # this contains the root for the following lines
                 # root is the first word (might be followed by comments), 
@@ -69,7 +69,7 @@ def process_pos(voc, cat, glossPOS):
         POS = m.group(1)
         gloss = glossPOS
         # replace abbreviations as above with their long forms
-        for pos_type, long_pos_type in pos_replacement.items():
+        for pos_type, long_pos_type in list(pos_replacement.items()):
             if pos_type.startswith(POS):
                 POS = long_pos_type
     else:
@@ -93,7 +93,7 @@ def process_pos(voc, cat, glossPOS):
         elif POS.startswith('ADJ'):
             POS = "Adjective"
         else:
-            print "no POS can be deduced for %s" % voc
+            print("no POS can be deduced for %s" % voc)
             assert False
 
     # make POS sentence case
@@ -104,7 +104,7 @@ def process_pos(voc, cat, glossPOS):
     return POS, gloss
 
 def process_tableXY(filename):
-    with open(filename, "r") as f:
+    with open(filename, "r", encoding="iso8859-1") as f:
         for line in f:
             if line.startswith(';'):
                 continue
