@@ -116,7 +116,8 @@ def gen_dict():
         if root == "": processed_root = "No root"
         formatted_head_word = "<b>%s - %s</b>" % (escape(processed_lemma), escape(processed_root))
         forms = []
-        formatted_desc = "<ul>\n"
+        form_set = set()
+        all_defs = []
         for stem_entry in stem_list:
             n_stems += 1
             first = True
@@ -128,7 +129,10 @@ def gen_dict():
 
 
                 u_unvowelled = transliterate.b2u(unvowelled_form)
-                forms.append(u_unvowelled)
+                form = u_unvowelled
+                if form not in form_set:
+                    forms.append(form)
+                    form_set.add(form)
                 
 
                 if first:
@@ -143,15 +147,17 @@ def gen_dict():
                         gloss = "to " + gloss
 
                     entry = """<li> %s <i>%s</i> %s</li>\n""" % (escape(uvowelled), escape(stem_entry.pos), escape(gloss))
-
-                    formatted_desc += entry
+                    if entry not in all_defs:
+                        all_defs.append(entry)
 
                     
 
         lemma_idx += 1
         if (lemma_idx & 1023 == 0):
             print("Progress: %.2f %%" % (100.0 * float(lemma_idx) / len(lemma_selection)))
-       
+
+        formatted_desc = "<ul>\n"
+        formatted_desc += "".join(all_defs)
         formatted_desc += "\n</ul>\n"
         out_dict.add_dict_entry(formatted_head_word, forms, formatted_desc)
         
