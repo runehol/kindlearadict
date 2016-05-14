@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from collections import defaultdict
 from process_files import process_textfile, process_tableXY
 import transliterate
