@@ -4,7 +4,7 @@ from collections import defaultdict
 from process_files import process_textfile, process_tableXY
 import transliterate
 import time
-import kindledictgen
+import opfgen
 from xml.sax.saxutils import escape, quoteattr
 
 prefixes = []
@@ -91,7 +91,7 @@ def gen_dict():
     process_tableBC()
     process_tableAC()
 
-    out_dict = kindledictgen.KindleDictGenerator("The Morphological Arabic-English Dictionary", "https://github.com/runehol/kindlearadict/", ["Rune Holm"], "ar", "en", "../datafiles/aradict-cover.jpg", "../datafiles/title-page.html", "aradict", "aradict.opf")
+    out_dict = opfgen.KindleDictGenerator("The Morphological Arabic-English Dictionary", "https://github.com/runehol/kindlearadict/", ["Rune Holm"], "ar", "en", "../datafiles/aradict-cover.jpg", "../datafiles/title-page.html", "aradict", "aradict.opf")
 
     prefix_suffix_table = defaultdict(list)
     for stem_cat, prefixes_list in prefixes_for_cat.items():
