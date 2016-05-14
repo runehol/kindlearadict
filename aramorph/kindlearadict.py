@@ -104,10 +104,11 @@ def gen_dict():
     
     print(len(lemmas), len(prefixes), len(suffixes))
 
-    lemma_selection = lemmas[:100]
+    lemma_selection = lemmas #[:1000]
     n_generated = 0
     start_time = time.clock()
     n_stems = 0
+    lemma_idx = 0
     for lemma, root, stem_list in lemma_selection:
 
         processed_lemma = transliterate.b2u(lemma.split("-")[0].split("_")[0])
@@ -128,8 +129,7 @@ def gen_dict():
 
                 u_unvowelled = transliterate.b2u(unvowelled_form)
                 forms.append(u_unvowelled)
-#                print lemma, u_unvowelled
-                n_generated += 1
+                
 
                 if first:
                     first = False
@@ -148,7 +148,10 @@ def gen_dict():
 
                     
 
-
+        lemma_idx += 1
+        if (lemma_idx & 1023 == 0):
+            print("Progress: %.2f %%" % (100.0 * float(lemma_idx) / len(lemma_selection)))
+       
         formatted_desc += "\n</ul>\n"
         out_dict.add_dict_entry(formatted_head_word, forms, formatted_desc)
         
