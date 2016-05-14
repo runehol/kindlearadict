@@ -1,6 +1,3 @@
-# Explore using a pickled file rather than redis
-
-import cPickle as pickle
 from collections import defaultdict
 from process_files import process_textfile, process_tableXY
 import transliterate
