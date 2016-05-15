@@ -116,7 +116,6 @@ def gen_dict(dest_file, is_mini):
         lemma_selection = [lemma for lemma in lemmas if lemma[1][0:1] == "E"]
     else:
         lemma_selection = lemmas
-    n_generated = 0
     start_time = time.clock()
     n_stems = 0
     lemma_idx = 0
@@ -179,10 +178,11 @@ def gen_dict(dest_file, is_mini):
         out_dict.add_dict_entry(formatted_head_word, forms, formatted_desc)
         
 
-    elapsed_time = time.clock() - start_time
-    print("Generated %d forms from %d lemmas and %d stems in %f seconds" % (n_generated, len(lemma_selection), n_stems, elapsed_time))
-
     out_dict.finalize()
+
+    elapsed_time = time.clock() - start_time
+    print("Generated %d original entries, %d expanded entries, %d index size from %d lemmas and %d stems in %f seconds" % (out_dict.n_orig_entries, out_dict.n_expanded_entries, out_dict.index_size, len(lemma_selection), n_stems, elapsed_time))
+
                 
         
     

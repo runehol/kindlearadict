@@ -27,15 +27,14 @@ class KindleDictGenerator:
 
         self.start_dict_html()
 
+        self.index_size = 0
+        self.n_orig_entries = 0
+        self.n_expanded_entries = 0
 
 
-    def add_dict_entry(self, formatted_head_word, forms, formatted_desc):
-        max_n_forms = 250 #yeah, kindlegen has a max length of 255 inflections per entry. we solve that by splitting up the number of entries!
-        while len(forms) > max_n_forms:
-            self.add_dict_entry(formatted_head_word, forms[:max_n_forms], formatted_desc)
-            forms = forms[max_n_forms:]
-        if len(forms) == 0: return
-
+    def add_dict_entry_internal(self, formatted_head_word, forms, formatted_desc):
+        self.n_expanded_entries += 1
+        self.index_size += len(forms)
 
         if self.entries_in_curr_dict_html >= self.max_entries_per_dict_html:
             self.close_dict_html()
@@ -47,19 +46,34 @@ class KindleDictGenerator:
         <idx:entry scriptable="yes" spell="yes">
           <idx:short>
             <idx:orth value=%s>%s
-            <idx:infl>
         """ % (quoteattr(forms[0]), formatted_head_word))
 
-        for infl in forms[1:]:
-            self.curr_dict_f.write("""<idx:iform value=%s exact="yes"/>\n""" % quoteattr(infl))
+        if len(forms[1:]) > 0:
+            self.curr_dict_f.write("""
+            <idx:infl>
+            """)
+
+            for infl in forms[1:]:
+                self.curr_dict_f.write("""<idx:iform value=%s exact="yes"/>\n""" % quoteattr(infl))
+
+            self.curr_dict_f.write("""
+            </idx:infl>
+            """)
 
         self.curr_dict_f.write("""
-            </idx:infl>
            </idx:orth>
            %s
          </idx:short>
 	</idx:entry>
         """ % formatted_desc)
+
+
+    def add_dict_entry(self, formatted_head_word, forms, formatted_desc):
+        self.n_orig_entries += 1
+        max_n_forms = 250 #yeah, kindlegen has a max length of 255 inflections per entry. we solve that by splitting up the number of entries!
+        while len(forms):
+            self.add_dict_entry_internal(formatted_head_word, forms[:max_n_forms], formatted_desc)
+            forms = forms[max_n_forms:]
         
 
 
