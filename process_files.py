@@ -110,3 +110,8 @@ def process_tableXY(filename):
                 continue
             yield line.strip().split()
 
+
+def process_frequency_list_file(filename):
+    with open(filename, "r", encoding="utf-8") as f:
+        for line in f:
+            yield line.strip().split()

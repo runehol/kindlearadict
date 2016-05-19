@@ -30,6 +30,7 @@ class KindleDictGenerator:
         self.index_size = 0
         self.n_orig_entries = 0
         self.n_expanded_entries = 0
+        self.n_empty_entries = 0
 
 
     def add_dict_entry_internal(self, formatted_head_word, forms, formatted_desc):
@@ -69,6 +70,9 @@ class KindleDictGenerator:
 
 
     def add_dict_entry(self, formatted_head_word, forms, formatted_desc):
+        if len(forms) == 0:
+            self.n_empty_entries += 1
+            return
         self.n_orig_entries += 1
         max_n_forms = 250 #yeah, kindlegen has a max length of 255 inflections per entry. we solve that by splitting up the number of entries!
         while len(forms):

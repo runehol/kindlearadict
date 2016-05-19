@@ -6,7 +6,7 @@ import argparse
 import os.path
 import time
 
-from process_files import process_textfile, process_tableXY
+from process_files import process_textfile, process_tableXY, process_frequency_list_file
 import transliterate
 import opfgen
 
@@ -20,6 +20,8 @@ ac = defaultdict(list)
 
 prefixes_for_cat = defaultdict(list)
 suffixes_for_cat = defaultdict(list)
+
+freqlist = set()
 
 
 class Morpheme(object):
@@ -76,6 +78,12 @@ def process_tableAC():
     for (left, right) in process_tableXY("tableac.txt"):
         ac[left].append(right)
 
+
+def read_freq_list():
+    for (word, count) in process_frequency_list_file("ar-2012-freq-list.txt"):
+        freqlist.add(word)
+
+        
 def are_prefix_stem_compatible(prefix_morpheme, stem_morpheme):
     return stem_morpheme in ab[prefix_morpheme.cat]
     
@@ -86,7 +94,7 @@ def are_prefix_suffix_compatible(prefix_morpheme, suffix_morpheme):
     return suffix_morpheme.cat in ac[prefix_morpheme.cat]
 
         
-def gen_dict(dest_file, is_mini):
+def gen_dict(dest_file, is_mini, filter_by_freq_list):
     process_prefixes()
     process_stems()
     process_suffixes()
@@ -94,9 +102,13 @@ def gen_dict(dest_file, is_mini):
     process_tableBC()
     process_tableAC()
 
+    read_freq_list()
+
     dirname, fname = os.path.split(dest_file)
 
     title = "The Morphological Arabic-English Dictionary"
+    if filter_by_freq_list:
+        title = "The Abridged Morphological Arabic-English Dictionary"
     if is_mini:
         title = "Test Dictionary"
 
@@ -139,8 +151,9 @@ def gen_dict(dest_file, is_mini):
                 u_unvowelled = transliterate.b2u(unvowelled_form)
                 form = u_unvowelled
                 if form not in form_set:
-                    forms.append(form)
-                    form_set.add(form)
+                    if not filter_by_freq_list or form in freqlist:
+                        forms.append(form)
+                        form_set.add(form)
                 
 
                 if first:
@@ -181,7 +194,7 @@ def gen_dict(dest_file, is_mini):
     out_dict.finalize()
 
     elapsed_time = time.clock() - start_time
-    print("Generated %d original entries, %d expanded entries, %d index size from %d lemmas and %d stems in %f seconds" % (out_dict.n_orig_entries, out_dict.n_expanded_entries, out_dict.index_size, len(lemma_selection), n_stems, elapsed_time))
+    print("Generated %d original entries, %d expanded entries, %d empty entries, %d index size from %d lemmas and %d stems in %f seconds" % (out_dict.n_orig_entries, out_dict.n_expanded_entries, out_dict.n_empty_entries, out_dict.index_size, len(lemma_selection), n_stems, elapsed_time))
 
                 
         
@@ -193,4 +206,4 @@ if __name__ == "__main__":
     parser.add_argument('--mini', action='store_true',
                     help='Generate small test dictionary (only roots starting with ع)')
     arg = parser.parse_args()
-    gen_dict(arg.dest_file, arg.mini)
+    gen_dict(arg.dest_file, arg.mini, True)
