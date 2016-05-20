@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env pypy3
 
 from collections import defaultdict
 from xml.sax.saxutils import escape, quoteattr
