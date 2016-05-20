@@ -111109,7 +111109,7 @@ mAw	mAw	Nprop	Mao
 ;--- mAy
 ;; mAy_1
 mAy	mAy	Nprop	May
-mAyr	MAyr	Nprop	Mayer
+mAyr	mAyr	Nprop	Mayer
 ;
 ;--- mAys
 ;; mAyisotrw_1
