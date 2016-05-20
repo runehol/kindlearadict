@@ -79,8 +79,8 @@ def process_tableAC():
         ac[left].append(right)
 
 
-def read_freq_list():
-    for (word, count) in process_frequency_list_file("ar-2012-freq-list.txt"):
+def read_freq_list(freq_list_name):
+    for (word, count) in process_frequency_list_file(freq_list_name):
         freqlist.add(word)
 
         
@@ -94,7 +94,7 @@ def are_prefix_suffix_compatible(prefix_morpheme, suffix_morpheme):
     return suffix_morpheme.cat in ac[prefix_morpheme.cat]
 
         
-def gen_dict(dest_file, is_mini, filter_by_freq_list):
+def gen_dict(dest_file, is_mini, freq_list_names, gen_vowelled_forms):
     process_prefixes()
     process_stems()
     process_suffixes()
@@ -102,7 +102,10 @@ def gen_dict(dest_file, is_mini, filter_by_freq_list):
     process_tableBC()
     process_tableAC()
 
-    read_freq_list()
+    filter_by_freq_list = freq_list_names != []
+    for fname in freq_list_names:
+        read_freq_list(fname)
+
 
     dirname, fname = os.path.split(dest_file)
 
@@ -135,7 +138,6 @@ def gen_dict(dest_file, is_mini, filter_by_freq_list):
 
         processed_lemma = transliterate.b2u(lemma.split("-")[0].split("_")[0])
         formatted_head_word = "<b>%s</b>" % (escape(processed_lemma))
-        forms = []
         form_set = set()
         all_defs = []
         for stem_entry in stem_list:
@@ -149,19 +151,13 @@ def gen_dict(dest_file, is_mini, filter_by_freq_list):
 
 
                 u_unvowelled = transliterate.b2u(unvowelled_form)
-                form = u_unvowelled
-                if form not in form_set:
-                    if not filter_by_freq_list or form in freqlist:
-                        forms.append(form)
-                        form_set.add(form)
                 
-
+                vowelled_form = prefix_entry.vowelled + \
+                                stem_entry.vowelled + \
+                                suffix_entry.vowelled
                 if first:
-                    first = False
-                    vowelled_form = prefix_entry.vowelled + \
-                                    stem_entry.vowelled + \
-                                    suffix_entry.vowelled
                     uvowelled = transliterate.b2u(vowelled_form)
+
 
                     gloss = stem_entry.gloss
                     if "verb" in stem_entry.pos:
@@ -170,6 +166,20 @@ def gen_dict(dest_file, is_mini, filter_by_freq_list):
                     entry = """<li> %s <i>%s</i> %s</li>\n""" % (escape(uvowelled), escape(stem_entry.pos), escape(gloss))
                     if entry not in all_defs:
                         all_defs.append(entry)
+
+
+                form = u_unvowelled
+                if not filter_by_freq_list or form in freqlist:
+                    form_set.add(form)
+
+                if gen_vowelled_forms:
+                    for form in transliterate.b2u_vowelled_unvowelled_combinations(vowelled_form):
+                        if not filter_by_freq_list or form in freqlist:
+                            form_set.add(form)
+
+
+                first = False
+
 
                     
 
@@ -188,7 +198,7 @@ def gen_dict(dest_file, is_mini, filter_by_freq_list):
             formatted_desc += "Root: %s\n" % (escape(processed_root),)
 
         formatted_desc += "<hr\>\n"
-        out_dict.add_dict_entry(formatted_head_word, forms, formatted_desc)
+        out_dict.add_dict_entry(formatted_head_word, list(form_set), formatted_desc)
         
 
     out_dict.finalize()
@@ -205,5 +215,11 @@ if __name__ == "__main__":
                     help='Destination opf file')
     parser.add_argument('--mini', action='store_true',
                     help='Generate small test dictionary (only roots starting with ع)')
+    parser.add_argument('--vowelled-forms', action='store_true',
+                    help='Generate vowelled forms (best used with frequency list filter)')
+    parser.add_argument('--frequency-list', nargs='*', default=[],
+                    help='Frequency list to filter by (more than one allowed)')
+
     arg = parser.parse_args()
-    gen_dict(arg.dest_file, arg.mini, True)
+    print(arg.frequency_list)
+    gen_dict(arg.dest_file, arg.mini, arg.frequency_list, arg.vowelled_forms)
