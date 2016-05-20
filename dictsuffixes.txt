@@ -205,6 +205,7 @@ ynA	ayonA	NSuff-ayh	our two                    <pos>+ayo/NSUFF_MASC_DU_ACCGEN+nA
 ; ==========
 ; masc.acc., indef.
 A	AF	NSuff-AF	[acc.indef.]               <pos>+AF/NSUFF_MASC_SG_ACC_INDEF</pos>
+A	FA	NSuff-AF	[acc.indef.]               <pos>+AF/NSUFF_MASC_SG_ACC_INDEF</pos>
 ;
 ; ==========
 ; "-Ani" masc.du., nom.
