@@ -221,5 +221,4 @@ if __name__ == "__main__":
                     help='Frequency list to filter by (more than one allowed)')
 
     arg = parser.parse_args()
-    print(arg.frequency_list)
     gen_dict(arg.dest_file, arg.mini, arg.frequency_list, arg.vowelled_forms)
