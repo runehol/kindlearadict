@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+import itertools
 
 # helper functions for converting from Buckwalter to Unicode and vice versa
 
@@ -23,10 +24,30 @@ ala  = [# hamza through ghayn
         # dagger 'alif, waSla
         "ā",""]
 
-assert len(buck) == len(unic) == len(ala)
+
+unic = "".join(map(chr,
+             list(range(0x0621, 0x063b)) + # hamza through ghayn
+             list(range(0x0640, 0x0653)) + # taTwiil through sukuun
+             list(range(0x0660, 0x066A)) + # numerals
+             list(range(0x0670, 0x0672)))) # dagger 'alif, waSla
+
+optional_vowels = ([(chr(c),) for c in range(0x0621, 0x063b)]   +  # hamza through ghayn
+                   [(chr(c),) for c in range(0x0640, 0x064b)]   +  # taTwiil through ye
+                   [(chr(c),"") for c in range(0x064b, 0x0652)] +  # fathathaan through shadda
+                   [("",) for c in range(0x0652, 0x0653)]        +  # sukun
+                   [(chr(c),) for c in range(0x0660, 0x066A)]   +  # numerals
+                   [(chr(c),) for c in range(0x0670, 0x0672)])     # dagger 'alif, waSla
+
+
+
+assert len(buck) == len(unic) == len(ala) == len(optional_vowels)
+
 
 buck2unic = dict(list(zip([ord(letter) for letter in buck], unic)))
 unic2buck = dict(list(zip([ord(letter) for letter in unic], buck)))
+
+buck2optional_vowels = dict(list(zip(buck, optional_vowels)))
+
 
 def b2u(buckwalter_string):
     string = str(buckwalter_string).translate(buck2unic)
@@ -41,6 +62,20 @@ def b2ala_letter(letter):
         return ala[buck.index(letter)]
     except:
         return letter
+
+
+def b2u_vowelled_unvowelled_combinations(buckwalter_string):
+    combos = [buck2optional_vowels[c] for c in buckwalter_string]
+    opt_combos = combos[:1]
+    for c in combos[1:]:
+        if len(c) == 1 and len(combos[-1]) == 1:
+            opt_combos[-1] = (combos[-1][0] + c[0],)
+        else:
+            opt_combos.append(c)
+
+    return map("".join, itertools.product(*opt_combos))
+
+
 
 def b2ala(buckwalter_string):
     # deal with shadda (doubled letters)
