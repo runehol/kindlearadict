@@ -136,8 +136,12 @@ def gen_dict(dest_file, is_mini, freq_list_names, gen_vowelled_forms):
     start_time = time.clock()
     n_stems = 0
     lemma_idx = 0
-    for lemma, root, stem_list in lemma_selection:
 
+    lemmas_to_entry = dict()
+    index_to_lemmas = defaultdict(list)
+
+    print("Iterating and processing lemmas...")
+    for lemma, root, stem_list in lemma_selection:
         processed_lemma = transliterate.b2u(lemma.split("-")[0].split("_")[0])
         formatted_head_word = "<b>%s</b>" % (escape(processed_lemma))
         form_set = set()
@@ -202,9 +206,29 @@ def gen_dict(dest_file, is_mini, freq_list_names, gen_vowelled_forms):
             formatted_desc += "Root: %s\n" % (escape(processed_root),)
 
         formatted_desc += "<hr\>\n"
-        out_dict.add_dict_entry(formatted_head_word, list(form_set), formatted_desc)
+
+        lemmas_to_entry[lemma] = (formatted_head_word, formatted_desc)
+        for form in form_set:
+            index_to_lemmas[form].append(lemma)
+        #out_dict.add_dict_entry(formatted_head_word, sorted(list(form_set)), formatted_desc)
         
 
+    print("Sorting index...")
+    dict_entries = defaultdict(list)
+        
+    for index, lemma_list in index_to_lemmas.items():
+        lemma_tuple = tuple(lemma_list)
+        dict_entries[lemma_tuple].append(index)
+
+    print("Generating dictionary...")
+    for lemma_tuple, indices in dict_entries.items():
+        formatted_head_word, formatted_desc = lemmas_to_entry[lemma_tuple[0]]
+        for lemma in lemma_tuple[1:]:
+            hw, desc = lemmas_to_entry[lemma]
+            formatted_desc += hw + desc
+
+        out_dict.add_dict_entry(formatted_head_word, indices, formatted_desc)
+        
     out_dict.finalize()
 
     elapsed_time = time.clock() - start_time
