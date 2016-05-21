@@ -166,7 +166,7 @@ def gen_dict(dest_file, is_mini, freq_list_names, gen_vowelled_forms):
 
 
                     gloss = stem_entry.gloss
-                    if "verb" in stem_entry.pos:
+                    if "verb" in stem_entry.pos and not "Adverb" in stem_entry.pos:
                         gloss = "to " + gloss
 
                     entry = """<li> %s <i>%s</i> %s</li>\n""" % (escape(uvowelled), escape(stem_entry.pos), escape(gloss))
