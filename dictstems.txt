@@ -42560,6 +42560,8 @@ rAwnd	rAwanod	N	rhubarb
 rAyd	rAyod	Nprop	Ride
 rydr	rayodr	Nprop	Rider
 ;
+;--- r>Y
+;; r>Y_1
 r>Y	ra>aY	PV_0	see;think;believe
 ; AFP missing hamza problem
 rAY	ra>aY	PV_0	see;think;believe
@@ -94166,7 +94168,7 @@ mstqr	musotaqar~	N	residence
 ;; maqoruwr_1
 mqrwr	maqoruwr	N-ap	at ease     <pos>maqoruwr/ADJ</pos>
 ;
-;--- qrA
+;--- qr>
 ;; qara>-a_1
 qr>	qara>	PV->	read
 qr|	qara|	PV-|	read
