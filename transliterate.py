@@ -68,8 +68,8 @@ def b2u_vowelled_unvowelled_combinations(buckwalter_string):
     combos = [buck2optional_vowels[c] for c in buckwalter_string]
     opt_combos = combos[:1]
     for c in combos[1:]:
-        if len(c) == 1 and len(combos[-1]) == 1:
-            opt_combos[-1] = (combos[-1][0] + c[0],)
+        if len(c) == 1 and len(opt_combos[-1]) == 1:
+            opt_combos[-1] = (opt_combos[-1][0] + c[0],)
         else:
             opt_combos.append(c)
 
