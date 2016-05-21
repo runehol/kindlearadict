@@ -42,7 +42,7 @@ unic_no_vowels = ([chr(c) for c in range(0x0621, 0x063b)]   +  # hamza through g
 optional_vowels = ([(chr(c),) for c in range(0x0621, 0x063b)]   +  # hamza through ghayn
                    [(chr(c),) for c in range(0x0640, 0x064b)]   +  # taTwiil through ye
                    [(chr(c),"") for c in range(0x064b, 0x0652)] +  # fathathaan through shadda
-                   [("",) for c in range(0x0652, 0x0653)]        +  # sukun
+                   [(chr(c),"") for c in range(0x0652, 0x0653)]        +  # sukun
                    [(chr(c),) for c in range(0x0660, 0x066A)]   +  # numerals
                    [(chr(c),) for c in range(0x0670, 0x0672)])     # dagger 'alif, waSla
 
