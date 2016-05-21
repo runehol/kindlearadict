@@ -31,6 +31,14 @@ unic = "".join(map(chr,
              list(range(0x0660, 0x066A)) + # numerals
              list(range(0x0670, 0x0672)))) # dagger 'alif, waSla
 
+unic_no_vowels = ([chr(c) for c in range(0x0621, 0x063b)]   +  # hamza through ghayn
+                  [chr(c) for c in range(0x0640, 0x064b)]   +  # taTwiil through ye
+                  [None   for c in range(0x064b, 0x0652)] +  # fathathaan through shadda
+                  [None   for c in range(0x0652, 0x0653)]        +  # sukun
+                  [chr(c) for c in range(0x0660, 0x066A)]   +  # numerals
+                  [chr(c) for c in range(0x0670, 0x0672)])     # dagger 'alif, waSla
+
+
 optional_vowels = ([(chr(c),) for c in range(0x0621, 0x063b)]   +  # hamza through ghayn
                    [(chr(c),) for c in range(0x0640, 0x064b)]   +  # taTwiil through ye
                    [(chr(c),"") for c in range(0x064b, 0x0652)] +  # fathathaan through shadda
@@ -40,7 +48,7 @@ optional_vowels = ([(chr(c),) for c in range(0x0621, 0x063b)]   +  # hamza throu
 
 
 
-assert len(buck) == len(unic) == len(ala) == len(optional_vowels)
+assert len(buck) == len(unic) == len(ala) == len(unic_no_vowels) == len(optional_vowels)
 
 
 buck2unic = dict(list(zip([ord(letter) for letter in buck], unic)))
@@ -48,6 +56,7 @@ unic2buck = dict(list(zip([ord(letter) for letter in unic], buck)))
 
 buck2optional_vowels = dict(list(zip(buck, optional_vowels)))
 
+unic2novowels = dict(list(zip([ord(letter) for letter in unic], unic_no_vowels)))
 
 def b2u(buckwalter_string):
     string = str(buckwalter_string).translate(buck2unic)
@@ -76,6 +85,8 @@ def b2u_vowelled_unvowelled_combinations(buckwalter_string):
     return map("".join, itertools.product(*opt_combos))
 
 
+def unicode_strip_vowels(ustr):
+    return ustr.translate(unic2novowels)
 
 def b2ala(buckwalter_string):
     # deal with shadda (doubled letters)

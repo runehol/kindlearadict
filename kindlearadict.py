@@ -22,7 +22,7 @@ prefixes_for_cat = defaultdict(list)
 suffixes_for_cat = defaultdict(list)
 
 freqlist = set()
-
+unvowelled_freqlist = set()
 
 class Morpheme(object):
     def __init__(self, unvowelled, vowelled, cat, pos, gloss, root, lemma):
@@ -82,6 +82,8 @@ def process_tableAC():
 def read_freq_list(freq_list_name):
     for (word, count) in process_frequency_list_file(freq_list_name):
         freqlist.add(word)
+        unvowelled = transliterate.unicode_strip_vowels(word)
+        unvowelled_freqlist.add(unvowelled)
 
         
 def are_prefix_stem_compatible(prefix_morpheme, stem_morpheme):
@@ -169,13 +171,15 @@ def gen_dict(dest_file, is_mini, freq_list_names, gen_vowelled_forms):
 
 
                 form = u_unvowelled
-                if not filter_by_freq_list or form in freqlist:
-                    form_set.add(form)
+                if not filter_by_freq_list or form in unvowelled_freqlist:
 
-                if gen_vowelled_forms:
-                    for form in transliterate.b2u_vowelled_unvowelled_combinations(vowelled_form):
-                        if not filter_by_freq_list or form in freqlist:
-                            form_set.add(form)
+                    if not filter_by_freq_list or form in freqlist:
+                        form_set.add(form)
+
+                    if gen_vowelled_forms:
+                        for form in transliterate.b2u_vowelled_unvowelled_combinations(vowelled_form):
+                            if not filter_by_freq_list or form in freqlist:
+                                form_set.add(form)
 
 
                 first = False
