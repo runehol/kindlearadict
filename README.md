@@ -26,6 +26,9 @@ Credits
 * Incorporates code and data from Michelle Fullwood's Fuzzy Arabic Dictionary <http://fuzzyarabic.herokuapp.com/>.
 * Incorporates code from Alex Lee's pyaramorph Python port of the Buckwalter analyzer <http://home.uchicago.edu/~alexlee/pyaramorph/>.
 
+Notes
+-----
+
 Due to the large number of possible conjugations of Arabic words, including short vowels and diacritics, it is not possible to include every single conjugation in the dictionary, as the dictionary lookup times quickly become unacceptably long. The downloadable dictionary here has been selected to include words found at least twice in a large corpus of e-books.
 
 
