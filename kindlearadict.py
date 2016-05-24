@@ -123,8 +123,6 @@ def gen_dict(dest_file, is_mini, freq_list_names, gen_vowelled_forms, min_freque
     dirname, fname = os.path.split(dest_file)
 
     title = "The Morphological Arabic-English Dictionary"
-    if filter_by_freq_list:
-        title = "The Abridged Morphological Arabic-English Dictionary"
     if is_mini:
         title = "Test Dictionary"
 
