@@ -14,6 +14,8 @@ Installation
 
 The dictionary has been tested with a Kindle Paperwhite 3.
 
+Optional: The default fonts that come with a Kindle Paperwhite aren't so nice for Arabic, but it is possible to install alternate fonts that look better. Follow the instructions at [http://www.tech-wd.com/wd/2013/02/01/arabic-kindle-paperwhite/](http://www.tech-wd.com/wd/2013/02/01/arabic-kindle-paperwhite/) for nicer fonts.
+
 Screenshot
 ----------
 ![Screenshot](https://raw.githubusercontent.com/runehol/kindlearadict/master/webpages/screenshot_represent-50percent.png "Screenshot")
