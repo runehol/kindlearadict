@@ -21,7 +21,7 @@ def read_file(fname):
     elif ext == ".epub":
         return epubreader.read_file(fname)
 
-    elif ext == ".html" or ext == ".xhtml" or ext == ".htm":
+    elif ext == ".html" or ext == ".xhtml" or ext == ".htm" or ext == ".xml":
         return htmlreader.read_file(fname)
 
     elif ext == ".txt":

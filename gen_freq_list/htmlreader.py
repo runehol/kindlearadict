@@ -21,19 +21,29 @@ class TextExtractParser(HTMLParser):
             self.items.append(data)
 
 
-def parse_html(pname, section, content):
+def parse_html(pname, section, contents):
 
     parser = TextExtractParser()
-    parser.feed(content)
+    parser.feed(contents)
+    for item in parser.items:
+        yield item, section, pname
+
+def parse_file_html(pname, section, f):
+
+    parser = TextExtractParser()
+    chunk_size = 1024*1024
+    while True:
+        data = f.read(chunk_size)
+        if not data: break
+        parser.feed(data)
     for item in parser.items:
         yield item, section, pname
         
 
-def read_file(filename):
+def read_file_file(filename):
     pname = os.path.splitext(os.path.basename(filename))[0]
 
     f = open(filename, encoding="utf-8")
-    data = f.read()
-    yield from parse_html(pname, "", data)
+    yield from parse_html(pname, "", f)
 
 
