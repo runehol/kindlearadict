@@ -114,4 +114,6 @@ def process_tableXY(filename):
 def process_frequency_list_file(filename):
     with open(filename, "r", encoding="utf-8") as f:
         for line in f:
-            yield line.strip().split()
+            v = line.strip().split()
+            if len(v) == 2:
+                yield v[0], int(v[1])

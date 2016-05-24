@@ -21,7 +21,7 @@ ac = defaultdict(list)
 prefixes_for_cat = defaultdict(list)
 suffixes_for_cat = defaultdict(list)
 
-freqlist = set()
+freqlist = defaultdict(float)
 unvowelled_freqlist = set()
 
 class Morpheme(object):
@@ -79,12 +79,20 @@ def process_tableAC():
         ac[left].append(right)
 
 
-def read_freq_list(freq_list_name):
-    for (word, count) in process_frequency_list_file(freq_list_name):
-        freqlist.add(word)
-        unvowelled = transliterate.unicode_strip_vowels(word)
-        unvowelled_freqlist.add(unvowelled)
+def read_freq_list(freq_list_name, scale):
+    for word, count in process_frequency_list_file(freq_list_name):
+        freqlist[word] += count*scale
 
+def filter_freq_lists(min_frequency):
+
+    for word, v in list(freqlist.items()):
+        if v < min_frequency:
+            del freqlist[word]
+        else:
+            unvowelled = transliterate.unicode_strip_vowels(word)
+            unvowelled_freqlist.add(unvowelled)
+            
+        
         
 def are_prefix_stem_compatible(prefix_morpheme, stem_morpheme):
     return stem_morpheme in ab[prefix_morpheme.cat]
@@ -96,7 +104,7 @@ def are_prefix_suffix_compatible(prefix_morpheme, suffix_morpheme):
     return suffix_morpheme.cat in ac[prefix_morpheme.cat]
 
         
-def gen_dict(dest_file, is_mini, freq_list_names, gen_vowelled_forms):
+def gen_dict(dest_file, is_mini, freq_list_names, gen_vowelled_forms, min_frequency):
     process_prefixes()
     process_stems()
     process_suffixes()
@@ -106,7 +114,10 @@ def gen_dict(dest_file, is_mini, freq_list_names, gen_vowelled_forms):
 
     filter_by_freq_list = freq_list_names != []
     for fname in freq_list_names:
-        read_freq_list(fname)
+        print("Reading frequency list %s..." % (fname,))
+        read_freq_list(fname, 1.0)
+
+    filter_freq_lists(min_frequency)
 
 
     dirname, fname = os.path.split(dest_file)
@@ -245,8 +256,10 @@ if __name__ == "__main__":
                     help='Generate small test dictionary (only roots starting with ع)')
     parser.add_argument('--vowelled-forms', action='store_true',
                     help='Generate vowelled forms (best used with frequency list filter)')
+    parser.add_argument('--min-word-frequency', type=float, default=0.0,
+                    help='Minimum word frequency to be considered (measured in number of occurrences)')
     parser.add_argument('--frequency-list', nargs='*', default=[],
                     help='Frequency list to filter by (more than one allowed)')
 
     arg = parser.parse_args()
-    gen_dict(arg.dest_file, arg.mini, arg.frequency_list, arg.vowelled_forms)
+    gen_dict(arg.dest_file, arg.mini, arg.frequency_list, arg.vowelled_forms, arg.min_word_frequency)
