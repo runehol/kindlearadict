@@ -5,7 +5,7 @@ Installation
 ------------
 
 1. Download the [dictionary mobi file](https://github.com/runehol/kindlearadict/raw/master/release/morphological_arabic_english_dict.mobi) to a computer.
-2. Download some Arabic language ebook mobi files. We recommend books from [Hindawi](http://www.hindawi.org/).
+2. Download some Arabic language ebook mobi files. We recommend books from [Hindawi](http://www.hindawi.org/books/).
 3. Connect your Kindle to your computer using a USB cable.
 4. Copy the mobi files of the dictionary and the books you want to read into the documents folder of your Kindle.
 5. Unmount the Kindle drive.
